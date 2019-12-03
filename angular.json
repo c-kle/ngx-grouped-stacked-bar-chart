@@ -120,6 +120,12 @@
           }
         }
       }
-    }},
-  "defaultProject": "ngx-charts-grouped-stacked"
+    }
+  },
+  "defaultProject": "ngx-charts-grouped-stacked",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "scss"
+    }
+  }
 }
