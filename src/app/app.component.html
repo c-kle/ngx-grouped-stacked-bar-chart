@@ -1,3 +1,7 @@
-<app-grouped-stacked-bar-chart [results]="data"
+<app-grouped-stacked-bar-chart id="graph"
+                               [results]="data"
+                               [view]="[1000, 500]"
                                [xAxis]="true"
                                [yAxis]="true"></app-grouped-stacked-bar-chart>
+<button (click)="randomValues()">random</button>
+<button (click)="toPng()">export</button>

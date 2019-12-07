@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import html2canvas from 'html2canvas';
+import * as filsaver from 'file-saver';
 
 @Component({
   selector: 'app-root',
@@ -6,165 +8,58 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  
-  data = [
-    {
-      name: 'Germany',
-      series: [
-        {
-          name: '2010',
-          value: 40632,
-          extra: {
-            stacks: [
-              {
-                name: '1',
-                value: 20316
-              },
-              {
-                name: '2',
-                value: 20316
-              }
-            ]
-          }
-        },
-        {
-          name: '2000',
-          value: 36953,
-          extra: {
-            stacks: [
-              {
-                name: '1',
-                value: 18450
-              },
-              {
-                name: '2',
-                value: 18450
-              }
-            ]
-          }
-        },
-        {
-          name: '1990',
-          value: 31476,
-          extra: {
-            stacks: [
-              {
-                name: '1',
-                value: 15074
-              },
-              {
-                name: '2',
-                value: 15074
-              }
-            ]
-          }
+  private readonly groupNb = 10;
+  private readonly subGroupNb = 3;
+  private count = 0;
+  private _data: any[];
+  public get data(): any[] {
+    return this._data;
+  }
+  constructor() {
+    this.randomValues();
+  }
+  readonly toPng = () => {
+    const svg = document
+      .getElementById('graph')
+      .querySelector('.ngx-charts');
+    html2canvas(svg as HTMLElement).then(canvas => {
+      canvas.toBlob(blob => filsaver.saveAs(blob, 'test.png'));
+    });
+  }
+  readonly randomValues = () => {
+    const groupsNb = this.groupNb;
+    const subGroupsNb = this.subGroupNb;
+    const data = [];
+
+    for (let i = 0; i < groupsNb; i++) {
+      const group = {
+        name: `group_${i}`,
+        series: []
+      };
+      for (let j = 0; j < subGroupsNb; j++) {
+        const stacks = [
+          this.getRandomGraphData(`stack_1`),
+          this.getRandomGraphData(`stack_2`),
+        ];
+        if (this.count % 2) {
+          stacks[0].value = 0;
+          stacks[1].value = 0;
         }
-      ]
-    },
-    {
-      name: 'United States',
-      series: [
-        {
-          name: '2010',
-          value: 0,
-          extra: {
-            stacks: [
-              {
-                name: '1',
-                value: 0
-              },
-              {
-                name: '2',
-                value: 0
-              }
-            ]
-          }
-        },
-        {
-          name: '2000',
-          value: 45986,
-          extra: {
-            stacks: [
-              {
-                name: '1',
-                value: 22593
-              },
-              {
-                name: '2',
-                value: 22593
-              }
-            ]
-          }
-        },
-        {
-          name: '1990',
-          value: 37060,
-          extra: {
-            stacks: [
-              {
-                name: '1',
-                value: 17530
-              },
-              {
-                name: '2',
-                value: 17530
-              }
-            ]
-          }
-        }
-      ]
-    },
-    // {
-    //   name: 'France',
-    //   series: [
-    //     {
-    //       name: '2010',
-    //       value: 36745,
-    //       extra: {
-    //         code: 'fr'
-    //       }
-    //     },
-    //     {
-    //       name: '2000',
-    //       value: 34774,
-    //       extra: {
-    //         code: 'fr'
-    //       }
-    //     },
-    //     {
-    //       name: '1990',
-    //       value: 29476,
-    //       extra: {
-    //         code: 'fr'
-    //       }
-    //     }
-    //   ]
-    // },
-    // {
-    //   name: 'United Kingdom',
-    //   series: [
-    //     {
-    //       name: '2010',
-    //       value: 36240,
-    //       extra: {
-    //         code: 'uk'
-    //       }
-    //     },
-    //     {
-    //       name: '2000',
-    //       value: 32543,
-    //       extra: {
-    //         code: 'uk'
-    //       }
-    //     },
-    //     {
-    //       name: '1990',
-    //       value: 26424,
-    //       extra: {
-    //         code: 'uk'
-    //       }
-    //     }
-    //   ]
-    // }
-  ];
+        const subGroup = this.getRandomGraphData(`subGroup_${j}`, stacks[0].value + stacks[0].value);
+        subGroup.extra.stacks = stacks;
+        group.series.push(subGroup);
+      }
+      data.push(group);
+    }
+    this._data = data;
+    this.count++;
+  }
+
+  private readonly getRandomGraphData = (name: string, value: number = undefined) => {
+    return {
+      name,
+      value: value !== undefined ? value : Math.random() * 5000,
+      extra: { stacks: [] }
+    };
+  }
 }
